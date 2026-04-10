@@ -1,1379 +1,1728 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Architecture History Learning Platform</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #e0e0e0;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        header {
-            background: rgba(22, 33, 62, 0.95);
-            padding: 1.5rem;
-            border-bottom: 3px solid #d4af37;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #d4af37;
-            letter-spacing: 2px;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 1rem;
-        }
-
-        button {
-            padding: 0.7rem 1.5rem;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: #d4af37;
-            color: #1a1a2e;
-        }
-
-        .btn-primary:hover {
-            background: #e8c547;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
-        }
-
-        .btn-secondary {
-            background: rgba(212, 175, 55, 0.2);
-            color: #d4af37;
-            border: 2px solid #d4af37;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(212, 175, 55, 0.3);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.2);
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        .mode-selector {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            justify-content: center;
-        }
-
-        .mode-btn {
-            padding: 1rem 2rem;
-            border: 2px solid #d4af37;
-            background: transparent;
-            color: #d4af37;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-        }
-
-        .mode-btn.active {
-            background: #d4af37;
-            color: #1a1a2e;
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
-        }
-
-        .mode-btn:hover {
-            transform: translateY(-3px);
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Timeline Section */
-        .timeline {
-            position: relative;
-            padding: 2rem 0;
-        }
-
-        .timeline-line {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(to bottom, #d4af37, #6c5ce7);
-        }
-
-        .timeline-periods {
-            display: flex;
-            flex-direction: column;
-            gap: 3rem;
-        }
-
-        .period-block {
-            display: flex;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .period-block:nth-child(odd) {
-            flex-direction: row;
-        }
-
-        .period-block:nth-child(even) {
-            flex-direction: row-reverse;
-        }
-
-        .period-content {
-            width: 48%;
-        }
-
-        .period-marker {
-            width: 4%;
-            display: flex;
-            justify-content: center;
-        }
-
-        .period-dot {
-            width: 20px;
-            height: 20px;
-            background: #d4af37;
-            border: 4px solid #1a1a2e;
-            border-radius: 50%;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-        }
-
-        .period-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #d4af37;
-            margin-bottom: 1rem;
-        }
-
-        .period-card {
-            background: rgba(44, 62, 80, 0.6);
-            border: 2px solid #d4af37;
-            border-radius: 10px;
-            padding: 1.5rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .period-card:hover {
-            background: rgba(44, 62, 80, 0.9);
-            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
-            transform: translateX(10px);
-        }
-
-        .building-item {
-            background: rgba(52, 73, 94, 0.5);
-            border-left: 4px solid #d4af37;
-            padding: 1rem;
-            margin: 0.8rem 0;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .building-item:hover {
-            background: rgba(52, 73, 94, 0.8);
-            transform: translateX(5px);
-        }
-
-        .building-name {
-            font-weight: 600;
-            color: #d4af37;
-        }
-
-        .building-year {
-            font-size: 0.85rem;
-            color: #a0a0a0;
-        }
-
-        .favorite-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            transition: transform 0.2s ease;
-        }
-
-        .favorite-btn:hover {
-            transform: scale(1.2);
-        }
-
-        .favorite-btn.saved {
-            color: #d4af37;
-        }
-
-        /* Detail Panel */
-        .detail-panel {
-            position: fixed;
-            right: -500px;
-            top: 0;
-            width: 500px;
-            height: 100vh;
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            border-left: 3px solid #d4af37;
-            padding: 2rem;
-            overflow-y: auto;
-            z-index: 1000;
-            transition: right 0.4s ease;
-            box-shadow: -5px 0 30px rgba(0,0,0,0.5);
-        }
-
-        .detail-panel.open {
-            right: 0;
-        }
-
-        .detail-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            color: #d4af37;
-            font-size: 2rem;
-            cursor: pointer;
-        }
-
-        .detail-title {
-            font-size: 1.8rem;
-            color: #d4af37;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .detail-info {
-            color: #b0b0b0;
-            margin: 0.8rem 0;
-            font-size: 0.95rem;
-        }
-
-        .detail-label {
-            color: #d4af37;
-            font-weight: 700;
-            margin-top: 1.2rem;
-        }
-
-        .detail-description {
-            color: #d0d0d0;
-            margin-top: 0.5rem;
-            line-height: 1.7;
-        }
-
-        /* Board Section */
-        .board {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .board-card {
-            background: rgba(44, 62, 80, 0.7);
-            border: 2px solid #d4af37;
-            border-radius: 10px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .board-card:hover {
-            background: rgba(44, 62, 80, 0.95);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
-        }
-
-        .board-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 1rem;
-        }
-
-        .board-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #d4af37;
-        }
-
-        .remove-btn {
-            background: #d4af37;
-            color: #1a1a2e;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.2s ease;
-        }
-
-        .remove-btn:hover {
-            background: #e8c547;
-            transform: scale(1.1);
-        }
-
-        .board-period {
-            color: #a0a0a0;
-            font-size: 0.9rem;
-            margin-bottom: 0.8rem;
-        }
-
-        .board-notes {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid #d4af3744;
-            border-radius: 6px;
-            padding: 0.8rem;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            color: #d0d0d0;
-            min-height: 60px;
-        }
-
-        .notes-input {
-            width: 100%;
-            background: rgba(0,0,0,0.2);
-            border: 1px solid #d4af3755;
-            border-radius: 6px;
-            padding: 0.8rem;
-            color: #d0d0d0;
-            font-family: inherit;
-            resize: vertical;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .notes-input::placeholder {
-            color: #707070;
-        }
-
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 3rem;
-            color: #707070;
-        }
-
-        .empty-state p {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-        }
-
-        /* Compare Section */
-        .compare-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .compare-card {
-            background: rgba(44, 62, 80, 0.7);
-            border: 2px solid #d4af37;
-            border-radius: 10px;
-            padding: 1.5rem;
-        }
-
-        .compare-selector {
-            margin-bottom: 1.5rem;
-        }
-
-        .compare-label {
-            color: #d4af37;
-            font-weight: 700;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .compare-select {
-            width: 100%;
-            padding: 0.8rem;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid #d4af37;
-            border-radius: 6px;
-            color: #d0d0d0;
-            font-size: 0.95rem;
-        }
-
-        .compare-details {
-            font-size: 0.9rem;
-            color: #d0d0d0;
-        }
-
-        .compare-detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.7rem 0;
-            border-bottom: 1px solid #d4af3733;
-        }
-
-        .compare-detail-label {
-            color: #d4af37;
-            font-weight: 600;
-        }
-
-        .compare-notes-section {
-            grid-column: 1 / -1;
-            margin-top: 2rem;
-        }
-
-        .compare-notes-input {
-            width: 100%;
-            background: rgba(0,0,0,0.2);
-            border: 2px solid #d4af37;
-            border-radius: 6px;
-            padding: 1rem;
-            color: #d0d0d0;
-            font-family: inherit;
-            font-size: 0.95rem;
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        .compare-notes-input::placeholder {
-            color: #707070;
-        }
-
-        .save-comparison-btn {
-            margin-top: 1rem;
-            padding: 1rem 2rem;
-            background: #d4af37;
-            color: #1a1a2e;
-            border: none;
-            border-radius: 6px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .save-comparison-btn:hover {
-            background: #e8c547;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
-        }
-
-        /* Comparison List */
-        .comparison-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .comparison-item {
-            background: rgba(52, 73, 94, 0.6);
-            border: 2px solid #d4af37;
-            border-radius: 10px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .comparison-item:hover {
-            background: rgba(52, 73, 94, 0.9);
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
-        }
-
-        .comparison-buildings {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            gap: 1rem;
-        }
-
-        .comparison-building {
-            flex: 1;
-        }
-
-        .comparison-building-name {
-            color: #d4af37;
-            font-weight: 700;
-            font-size: 0.95rem;
-        }
-
-        .comparison-building-period {
-            color: #a0a0a0;
-            font-size: 0.8rem;
-        }
-
-        .comparison-divider {
-            color: #d4af37;
-            font-weight: 700;
-        }
-
-        .comparison-notes-display {
-            background: rgba(0,0,0,0.2);
-            border-left: 3px solid #d4af37;
-            padding: 1rem;
-            border-radius: 4px;
-            color: #d0d0d0;
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        .delete-comparison-btn {
-            margin-top: 1rem;
-            padding: 0.6rem 1.2rem;
-            background: rgba(255, 87, 87, 0.2);
-            color: #ff5757;
-            border: 1px solid #ff5757;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-        }
-
-        .delete-comparison-btn:hover {
-            background: rgba(255, 87, 87, 0.3);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .timeline-line {
-                left: 20px;
-            }
-
-            .period-block {
-                flex-direction: column !important;
-            }
-
-            .period-content {
-                width: 100%;
-            }
-
-            .period-marker {
-                width: 100%;
-                margin: 1rem 0;
-            }
-
-            .detail-panel {
-                width: 100%;
-                right: -100%;
-            }
-
-            .compare-section {
-                grid-template-columns: 1fr;
-            }
-
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .nav-buttons {
-                width: 100%;
-                justify-content: space-around;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture Through Time</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=Syne+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #ffffff;
+    --grey-50: #f8f8f8;
+    --grey-100: #f0f0f0;
+    --grey-200: #e2e2e2;
+    --grey-300: #c8c8c8;
+    --grey-400: #a0a0a0;
+    --grey-500: #707070;
+    --grey-600: #4a4a4a;
+    --grey-700: #2e2e2e;
+    --grey-900: #111111;
+    --accent: #5a7a8a;
+    --accent-light: #dce8ed;
+    --border: 1px solid var(--grey-200);
+    --border-dark: 1px solid var(--grey-300);
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --radius: 2px;
+    --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-display);
+    background: var(--white);
+    color: var(--grey-900);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ---- LOADER ---- */
+  #loader {
+    position: fixed; inset: 0;
+    background: var(--white);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  #loader.hide { opacity: 0; visibility: hidden; }
+
+  .loader-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--grey-400);
+    text-transform: uppercase;
+  }
+
+  .loader-bar-track {
+    width: 200px;
+    height: 1px;
+    background: var(--grey-200);
+    position: relative;
+    overflow: hidden;
+  }
+  .loader-bar-fill {
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: var(--grey-700);
+    animation: loadbar 1.4s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+  @keyframes loadbar {
+    0% { left: -100%; }
+    100% { left: 0%; }
+  }
+
+  /* ---- HEADER ---- */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    height: 56px;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+  }
+
+  .header-logo {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--grey-700);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header-logo::before {
+    content: '';
+    display: block;
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--grey-700);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+  }
+
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .header-nav button {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--grey-500);
+    background: none;
+    border: none;
+    border-left: var(--border);
+    padding: 0 20px;
+    height: 56px;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+  .header-nav button:last-child { border-right: var(--border); }
+  .header-nav button:hover { color: var(--grey-900); background: var(--grey-50); }
+  .header-nav button.active { color: var(--grey-900); background: var(--grey-100); }
+
+  .header-clock {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--grey-400);
+  }
+
+  /* ---- HERO ---- */
+  #hero {
+    margin-top: 56px;
+    padding: 80px 32px 60px;
+    border-bottom: var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.7s 1.6s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-left {
+    padding-right: 48px;
+    border-right: var(--border);
+  }
+
+  .hero-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--grey-300);
+  }
+
+  .hero-title {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--grey-900);
+    margin-bottom: 24px;
+  }
+
+  .hero-title span {
+    color: var(--grey-400);
+  }
+
+  .hero-desc {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--grey-500);
+    max-width: 380px;
+  }
+
+  .hero-right {
+    padding-left: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 16px;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 1px;
+    background: var(--grey-200);
+    border: var(--border-dark);
+  }
+  .hero-stat {
+    background: var(--white);
+    padding: 20px;
+  }
+  .hero-stat-num {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--grey-900);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .hero-stat-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+  }
+
+  /* ---- FILTER BAR ---- */
+  #filter-bar {
+    position: sticky;
+    top: 56px;
+    z-index: 90;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    opacity: 0;
+    animation: fadeUp 0.5s 1.9s ease forwards;
+  }
+  #filter-bar::-webkit-scrollbar { display: none; }
+
+  .filter-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    padding-right: 20px;
+    border-right: var(--border);
+    margin-right: 16px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .filter-btn {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--grey-500);
+    background: none;
+    border: none;
+    padding: 16px 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .filter-btn:hover { color: var(--grey-900); }
+  .filter-btn.active {
+    color: var(--grey-900);
+    border-bottom-color: var(--grey-700);
+  }
+
+  /* ---- MAIN GRID ---- */
+  #app { padding: 0 32px 80px; }
+
+  /* ---- TIMELINE PERIOD ---- */
+  .period-section {
+    border-bottom: var(--border);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .period-section.visible { opacity: 1; transform: translateY(0); }
+
+  .period-header {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    align-items: center;
+    gap: 24px;
+    padding: 28px 0 20px;
+    border-bottom: var(--border);
+  }
+
+  .period-year {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--grey-400);
+    line-height: 1.4;
+  }
+
+  .period-name {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--grey-900);
+  }
+
+  .period-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--grey-400);
+    text-transform: uppercase;
+  }
+
+  /* ---- BUILDING CARDS ---- */
+  .buildings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--grey-200);
+    margin: 1px 0;
+  }
+
+  .building-card {
+    background: var(--white);
+    padding: 24px;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .building-card:hover { background: var(--grey-50); }
+  .building-card.selected { background: var(--grey-100); }
+
+  .card-index {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--grey-300);
+    text-transform: uppercase;
+  }
+
+  .card-visual {
+    width: 100%;
+    height: 120px;
+    background: var(--grey-100);
+    border: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* SVG architectural silhouettes */
+  .card-visual svg {
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+  }
+
+  .card-body { flex: 1; }
+
+  .card-name {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--grey-900);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .card-location {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--grey-400);
+    letter-spacing: 0.05em;
+  }
+  .card-year-badge {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--grey-500);
+    background: var(--grey-100);
+    padding: 2px 7px;
+    border: var(--border);
+  }
+
+  .card-desc {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.7;
+    color: var(--grey-400);
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: var(--border);
+    margin-top: auto;
+  }
+
+  .card-style-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 3px 8px;
+  }
+
+  .btn-fav {
+    width: 28px; height: 28px;
+    background: none;
+    border: var(--border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    flex-shrink: 0;
+  }
+  .btn-fav:hover { background: var(--grey-100); border-color: var(--grey-400); }
+  .btn-fav.active { background: var(--grey-900); border-color: var(--grey-900); }
+  .btn-fav svg { width: 12px; height: 12px; }
+  .btn-fav.active svg path { fill: var(--white); stroke: none; }
+
+  .btn-compare {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: none;
+    border: var(--border);
+    color: var(--grey-500);
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-compare:hover { background: var(--grey-900); color: var(--white); border-color: var(--grey-900); }
+  .btn-compare.in-compare { background: var(--grey-700); color: var(--white); border-color: var(--grey-700); }
+
+  /* ---- PANEL (detail/compare) ---- */
+  #side-panel {
+    position: fixed;
+    top: 56px; right: -480px;
+    width: 460px;
+    height: calc(100vh - 56px);
+    background: var(--white);
+    border-left: var(--border-dark);
+    z-index: 200;
+    overflow-y: auto;
+    transition: right 0.4s cubic-bezier(0.4,0,0.2,1);
+    display: flex;
+    flex-direction: column;
+  }
+  #side-panel.open { right: 0; }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--white);
+    z-index: 2;
+  }
+  .panel-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--grey-500);
+  }
+  .btn-close {
+    width: 32px; height: 32px;
+    background: none;
+    border: var(--border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    font-size: 18px;
+    color: var(--grey-500);
+    line-height: 1;
+  }
+  .btn-close:hover { background: var(--grey-100); }
+
+  .panel-body { padding: 24px; flex: 1; }
+
+  .detail-name {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--grey-900);
+    margin-bottom: 4px;
+    line-height: 1.1;
+  }
+  .detail-period-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 20px;
+  }
+
+  .detail-visual {
+    width: 100%;
+    height: 160px;
+    background: var(--grey-50);
+    border: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .detail-visual svg { width: 100%; height: 100%; opacity: 0.35; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--grey-200);
+    border: var(--border-dark);
+    margin-bottom: 20px;
+  }
+  .detail-cell {
+    background: var(--white);
+    padding: 14px;
+  }
+  .detail-cell-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 4px;
+  }
+  .detail-cell-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--grey-800);
+  }
+
+  .detail-section-title {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: var(--border);
+  }
+
+  .detail-text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.85;
+    color: var(--grey-600);
+    margin-bottom: 20px;
+  }
+
+  .detail-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .feature-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--grey-600);
+    border: var(--border-dark);
+    padding: 4px 10px;
+    background: var(--grey-50);
+  }
+
+  /* ---- BOARD VIEW ---- */
+  #board-view {
+    display: none;
+    padding: 32px 0;
+  }
+  #board-view.active { display: block; }
+
+  .board-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: var(--border);
+  }
+  .board-title {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--grey-900);
+  }
+  .board-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--grey-400);
+  }
+
+  .board-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--grey-200);
+  }
+
+  .board-card {
+    background: var(--white);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .board-card-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--grey-900);
+    letter-spacing: -0.01em;
+  }
+  .board-card-meta {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+  }
+
+  .board-note {
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.7;
+    color: var(--grey-600);
+    border: var(--border);
+    background: var(--grey-50);
+    padding: 10px;
+    resize: vertical;
+    min-height: 72px;
+    outline: none;
+    transition: var(--transition);
+  }
+  .board-note:focus { border-color: var(--grey-400); background: var(--white); }
+
+  .board-card-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .btn-remove-board {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    background: none;
+    border: var(--border);
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-remove-board:hover { color: var(--grey-900); border-color: var(--grey-600); }
+
+  .board-empty {
+    padding: 60px 0;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--grey-300);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: var(--border);
+  }
+
+  /* ---- COMPARE VIEW ---- */
+  #compare-view {
+    display: none;
+    padding: 32px 0;
+  }
+  #compare-view.active { display: block; }
+
+  .compare-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: var(--border);
+  }
+  .compare-title {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--grey-900);
+  }
+  .compare-hint {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--grey-400);
+    letter-spacing: 0.1em;
+  }
+
+  .compare-slots {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr;
+    gap: 0;
+    margin-bottom: 24px;
+  }
+  .compare-slot {
+    border: var(--border-dark);
+    padding: 24px;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .compare-slot-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 12px;
+  }
+  .compare-slot-empty {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--grey-300);
+    letter-spacing: 0.1em;
+    text-align: center;
+  }
+  .compare-slot-name {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--grey-900);
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .compare-slot-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--grey-500);
+  }
+  .compare-vs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: var(--border-dark);
+    border-bottom: var(--border-dark);
+    background: var(--grey-50);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--grey-400);
+    letter-spacing: 0.15em;
+  }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: var(--border-dark);
+    margin-bottom: 20px;
+  }
+  .compare-table th, .compare-table td {
+    padding: 13px 16px;
+    border: var(--border);
+    text-align: left;
+  }
+  .compare-table th {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--grey-500);
+    background: var(--grey-50);
+    font-weight: 400;
+  }
+  .compare-table td {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--grey-700);
+  }
+  .compare-table td.highlight {
+    color: var(--grey-900);
+    font-weight: 500;
+    background: var(--grey-50);
+  }
+
+  .compare-notes-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: var(--border);
+  }
+  #compare-notes {
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--grey-700);
+    border: var(--border-dark);
+    background: var(--grey-50);
+    padding: 14px;
+    resize: vertical;
+    min-height: 100px;
+    outline: none;
+    transition: var(--transition);
+  }
+  #compare-notes:focus { border-color: var(--grey-500); background: var(--white); }
+
+  .btn-clear-compare {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: none;
+    border: var(--border-dark);
+    color: var(--grey-500);
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-clear-compare:hover { background: var(--grey-100); }
+
+  /* ---- COMPARE BADGE ---- */
+  #compare-badge {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--grey-900);
+    color: var(--white);
+    border: none;
+    padding: 14px 28px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #compare-badge.show { transform: translateX(-50%) translateY(0); }
+  #compare-badge:hover { background: var(--grey-700); }
+
+  .badge-dot {
+    width: 18px; height: 18px;
+    background: var(--white);
+    color: var(--grey-900);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  /* ---- SCROLLBAR ---- */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--grey-100); }
+  ::-webkit-scrollbar-thumb { background: var(--grey-300); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--grey-400); }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 768px) {
+    header { padding: 0 16px; }
+    #hero { grid-template-columns: 1fr; padding: 40px 16px; }
+    .hero-left { padding-right: 0; border-right: none; border-bottom: var(--border); padding-bottom: 24px; margin-bottom: 24px; }
+    .hero-right { padding-left: 0; }
+    #app { padding: 0 16px 60px; }
+    #filter-bar { padding: 0 16px; }
+    .period-header { grid-template-columns: 80px 1fr; }
+    .period-count { display: none; }
+    #side-panel { width: 100%; right: -100%; }
+    .compare-slots { grid-template-columns: 1fr; }
+    .compare-vs { display: none; }
+  }
+
+  /* ---- TIMELINE VIEW ---- */
+  #timeline-view { display: block; }
+  #timeline-view.hidden { display: none; }
+</style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <div class="header-title">🏛️ Architecture History</div>
-            <div class="nav-buttons">
-                <button class="btn-secondary" onclick="scrollToTop()">↑ Top</button>
-            </div>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="mode-selector">
-            <button class="mode-btn active" onclick="switchMode('timeline')">📅 Timeline</button>
-            <button class="mode-btn" onclick="switchMode('board')">📌 My Board</button>
-            <button class="mode-btn" onclick="switchMode('compare')">🔍 Compare</button>
-        </div>
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-label">Initialising Archive</div>
+  <div class="loader-bar-track">
+    <div class="loader-bar-fill"></div>
+  </div>
+  <div class="loader-label" style="color:var(--grey-300)">architecture through time</div>
+</div>
 
-        <!-- Timeline Section -->
-        <div id="timeline" class="section active">
-            <div class="timeline">
-                <div class="timeline-line"></div>
-                <div class="timeline-periods" id="timelineContainer"></div>
-            </div>
-        </div>
+<!-- HEADER -->
+<header>
+  <div class="header-logo">Architecture Through Time</div>
+  <nav class="header-nav">
+    <button class="active" onclick="switchView('timeline')" id="btn-timeline">Timeline</button>
+    <button onclick="switchView('board')" id="btn-board">Board</button>
+    <button onclick="switchView('compare')" id="btn-compare-view">Compare</button>
+  </nav>
+  <div class="header-clock" id="clock">--:--:--</div>
+</header>
 
-        <!-- Board Section -->
-        <div id="board" class="section">
-            <h2 style="color: #d4af37; margin-bottom: 2rem; font-size: 1.8rem;">My Favourite Precedents</h2>
-            <div class="board" id="boardContainer"></div>
-        </div>
-
-        <!-- Compare Section -->
-        <div id="compare" class="section">
-            <h2 style="color: #d4af37; margin-bottom: 2rem; font-size: 1.8rem;">Compare Precedents</h2>
-            
-            <div class="compare-section">
-                <div class="compare-card">
-                    <div class="compare-selector">
-                        <label class="compare-label">Building 1</label>
-                        <select class="compare-select" id="building1Select" onchange="updateCompareDisplay()">
-                            <option value="">Select a building...</option>
-                        </select>
-                    </div>
-                    <div class="compare-details" id="building1Details"></div>
-                </div>
-
-                <div class="compare-card">
-                    <div class="compare-selector">
-                        <label class="compare-label">Building 2</label>
-                        <select class="compare-select" id="building2Select" onchange="updateCompareDisplay()">
-                            <option value="">Select a building...</option>
-                        </select>
-                    </div>
-                    <div class="compare-details" id="building2Details"></div>
-                </div>
-            </div>
-
-            <div class="compare-notes-section">
-                <label class="compare-label">Your Comparison Notes</label>
-                <textarea class="compare-notes-input" id="compareNotes" placeholder="Write your observations comparing these two buildings..."></textarea>
-                <button class="save-comparison-btn" onclick="saveComparison()">💾 Save Comparison</button>
-            </div>
-
-            <h3 style="color: #d4af37; margin-top: 3rem; margin-bottom: 1.5rem;">Saved Comparisons</h3>
-            <div id="comparisonListContainer"></div>
-        </div>
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Visual Archive</div>
+    <h1 class="hero-title">History of<br><span>Architecture</span></h1>
+    <p class="hero-desc">A curated index of architectural movements, structures, and design philosophies spanning 4,000 years of human civilisation.</p>
+  </div>
+  <div class="hero-right">
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">13</div>
+        <div class="hero-stat-label">Periods</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">26</div>
+        <div class="hero-stat-label">Buildings</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">4K</div>
+        <div class="hero-stat-label">Years</div>
+      </div>
     </div>
+  </div>
+</section>
 
-    <!-- Detail Panel -->
-    <div class="detail-panel" id="detailPanel">
-        <button class="detail-close" onclick="closeDetailPanel()">✕</button>
-        <div id="detailContent"></div>
+<!-- FILTER BAR -->
+<div id="filter-bar">
+  <div class="filter-label">Filter</div>
+  <button class="filter-btn active" onclick="filterPeriod('all', this)">All Periods</button>
+  <button class="filter-btn" onclick="filterPeriod('Ancient', this)">Ancient</button>
+  <button class="filter-btn" onclick="filterPeriod('Classical', this)">Classical</button>
+  <button class="filter-btn" onclick="filterPeriod('Medieval', this)">Medieval</button>
+  <button class="filter-btn" onclick="filterPeriod('Renaissance', this)">Renaissance</button>
+  <button class="filter-btn" onclick="filterPeriod('Baroque', this)">Baroque</button>
+  <button class="filter-btn" onclick="filterPeriod('Neoclassical', this)">Neoclassical</button>
+  <button class="filter-btn" onclick="filterPeriod('Industrial', this)">Industrial</button>
+  <button class="filter-btn" onclick="filterPeriod('Modernism', this)">Modernism</button>
+  <button class="filter-btn" onclick="filterPeriod('Contemporary', this)">Contemporary</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- TIMELINE VIEW -->
+  <div id="timeline-view"></div>
+
+  <!-- BOARD VIEW -->
+  <div id="board-view">
+    <div class="board-header">
+      <div class="board-title">My Board</div>
+      <div class="board-count" id="board-count">0 saved</div>
     </div>
+    <div class="board-grid" id="board-grid">
+      <div class="board-empty">No buildings saved yet &mdash; heart a building to add it here</div>
+    </div>
+  </div>
 
-    <script>
-        // Architecture Data
-        const architectureData = [
-            {
-                period: 'Ancient Greek',
-                year: '500-146 BCE',
-                buildings: [
-                    {
-                        id: 'parthenon',
-                        name: 'Parthenon',
-                        year: '438 BCE',
-                        location: 'Athens, Greece',
-                        architect: 'Iktinos & Kallikrates',
-                        description: 'The Parthenon represents the pinnacle of Classical Greek architecture. Built as a temple to Athena, it exemplifies the Doric order and demonstrates sophisticated understanding of optical illusions through entasis (subtle curvature of columns). Every element—from the golden ratio proportions to the sculptural program—reflects mathematical precision and aesthetic harmony.',
-                        significance: 'Established principles of symmetry and proportion that influenced Western architecture for millennia. Introduced the concept of optical refinement in classical architecture.',
-                        structure: 'Doric columns, marble, optical illusionistic devices',
-                        period: 'Ancient Greek'
-                    },
-                    {
-                        id: 'erechtheion',
-                        name: 'Erechtheion',
-                        year: '421-405 BCE',
-                        location: 'Athens, Greece',
-                        architect: 'Unknown',
-                        description: 'An Ionic temple with asymmetrical plan addressing uneven topography. Features the famous Caryatids (female figures) serving as columns on the south porch. Shows innovative response to complex site constraints while maintaining classical elegance.',
-                        significance: 'Demonstrates alternative solutions to the rigid symmetry of classical architecture. Pioneered use of sculptural elements as structural components.',
-                        structure: 'Ionic columns, marble, sculptural caryatids',
-                        period: 'Ancient Greek'
-                    }
-                ]
-            },
-            {
-                period: 'Ancient Roman',
-                year: '27 BCE-476 CE',
-                buildings: [
-                    {
-                        id: 'colosseum',
-                        name: 'Colosseum',
-                        year: '80 CE',
-                        location: 'Rome, Italy',
-                        architect: 'Vespasian & Titus (emperors)',
-                        description: 'The largest amphitheater ever built, the Colosseum represents Roman engineering mastery. It combines all three classical orders (Doric, Ionic, Corinthian) across its four stories and features an ingenious system of concrete vaults, radial walls, and corridors. The elliptical plan and 80 entrances allowed efficient crowd management for 50,000+ spectators.',
-                        significance: 'Revolutionized large-scale public architecture through innovative use of Roman concrete. Influenced stadium and arena design for two millennia. Demonstrates sophisticated structural engineering and urban planning.',
-                        structure: 'Roman concrete, travertine, tufa, steel reinforcement',
-                        period: 'Ancient Roman'
-                    },
-                    {
-                        id: 'pantheon',
-                        name: 'Pantheon',
-                        year: '128 CE',
-                        location: 'Rome, Italy',
-                        architect: 'Hadrian',
-                        description: 'A temple featuring the world\'s largest unreinforced concrete dome (142 feet). The mathematical precision of its design—the height equals the diameter—creates perfect proportions. The single oculus (eye opening) at the dome\'s apex serves as both light source and engineering solution, distributing weight efficiently.',
-                        significance: 'Represents the pinnacle of Roman concrete technology. The dome remained unsurpassed in size for over 1,800 years. Influenced neoclassical architecture from the Renaissance onward.',
-                        structure: 'Roman concrete, marble, exceptional dome engineering',
-                        period: 'Ancient Roman'
-                    }
-                ]
-            },
-            {
-                period: 'Medieval Gothic',
-                year: '1150-1500 CE',
-                buildings: [
-                    {
-                        id: 'chartres-cathedral',
-                        name: 'Chartres Cathedral',
-                        year: '1220 CE',
-                        location: 'Chartres, France',
-                        architect: 'Unknown',
-                        description: 'A masterpiece of Gothic architecture featuring revolutionary ribbed vaults and flying buttresses that allowed walls to reach 120+ feet. The pointed arches, clustered columns, and intricate sculptural program create a sense of verticality and spirituality. The south transept rose window is an engineering marvel.',
-                        significance: 'Established Gothic architectural principles that spread across Europe. Demonstrated how structural innovation (flying buttresses) enables aesthetic expression. Shows integration of stained glass as both artistic and structural element.',
-                        structure: 'Ribbed vaults, flying buttresses, pointed arches, stone',
-                        period: 'Medieval Gothic'
-                    },
-                    {
-                        id: 'notre-dame-reims',
-                        name: 'Notre-Dame de Reims',
-                        year: '1275 CE',
-                        location: 'Reims, France',
-                        architect: 'Jean de Chelles',
-                        description: 'The coronation cathedral of French kings, featuring a facade of unprecedented complexity with intricate tracery, 2,300+ sculptures, and a harmonious proportion system. The nave achieves remarkable height and light through advanced buttressing systems.',
-                        significance: 'Represents the apex of High Gothic. Demonstrates mastery of facade composition and sculptural integration. Influenced royal architecture across Europe.',
-                        structure: 'Gothic stone construction, ribbed vaults, advanced buttressing',
-                        period: 'Medieval Gothic'
-                    }
-                ]
-            },
-            {
-                period: 'Renaissance',
-                year: '1400-1600',
-                buildings: [
-                    {
-                        id: 'florence-cathedral',
-                        name: 'Florence Cathedral Dome',
-                        year: '1436 CE',
-                        location: 'Florence, Italy',
-                        architect: 'Filippo Brunelleschi',
-                        description: 'Brunelleschi\'s revolutionary dome was an engineering and artistic triumph. Using a double-shell brick structure with radial ribs, he solved the problem of spanning 143 feet without wooden scaffolding. The geometric perfection and innovation made it a symbol of Renaissance achievement.',
-                        significance: 'Revolutionized dome construction techniques. Demonstrated that classical principles could be revived and improved. Inspired Renaissance architecture throughout Italy.',
-                        structure: 'Brick, double-shell dome, innovative herringbone pattern',
-                        period: 'Renaissance'
-                    },
-                    {
-                        id: 'palazzo-medici',
-                        name: 'Palazzo Medici-Riccardi',
-                        year: '1444 CE',
-                        location: 'Florence, Italy',
-                        architect: 'Michelozzo',
-                        description: 'A paradigm of Renaissance palace design with rusticated stone facade, proportional window arrangements, and harmonious massing. The interior courtyard showcases classical column orders and creates a human-scaled private space.',
-                        significance: 'Established the Renaissance palace typology. Demonstrates classical proportion and restraint. Influenced palace architecture throughout Europe.',
-                        structure: 'Stone rustication, classical proportions, symmetrical composition',
-                        period: 'Renaissance'
-                    }
-                ]
-            },
-            {
-                period: 'Baroque',
-                year: '1600-1750',
-                buildings: [
-                    {
-                        id: 'st-peters-basilica',
-                        name: 'St. Peter\'s Basilica',
-                        year: '1629 CE',
-                        location: 'Vatican City',
-                        architect: 'Gian Lorenzo Bernini',
-                        description: 'The largest church in Christendom, featuring a massive dome and ornate interior. Bernini\'s design emphasizes dramatic spatial sequences, grand staircases, and integrated sculpture. The colonnade embraces the plaza like arms, creating emotional engagement.',
-                        significance: 'Defines Baroque spatial drama and ornament. Demonstrates integration of sculpture and architecture. Influenced church design for centuries.',
-                        structure: 'Massive dome, classical proportions, ornate decoration',
-                        period: 'Baroque'
-                    },
-                    {
-                        id: 'versailles',
-                        name: 'Palace of Versailles',
-                        year: '1661 CE',
-                        location: 'Versailles, France',
-                        architect: 'Louis Le Vau',
-                        description: 'An architectural and urban planning triumph, Versailles features 700+ rooms, vast formal gardens, and a 240-foot Hall of Mirrors. The palace demonstrates absolute control over space and nature, with every element contributing to a unified composition of unprecedented scale.',
-                        significance: 'Established Baroque palace as ultimate symbol of power. Integrated building with landscape at monumental scale. Influenced royal architecture globally.',
-                        structure: 'Symmetrical layout, formal proportions, integrated gardens',
-                        period: 'Baroque'
-                    }
-                ]
-            },
-            {
-                period: 'Neoclassical',
-                year: '1750-1850',
-                buildings: [
-                    {
-                        id: 'pantheon-paris',
-                        name: 'Panthéon',
-                        year: '1791 CE',
-                        location: 'Paris, France',
-                        architect: 'Jacques-Germain Soufflot',
-                        description: 'A neoclassical temple honoring great Frenchmen, featuring a massive dome and classical facade with Corinthian colonnade. The interior demonstrates innovative dome construction and spatial clarity based on rational principles.',
-                        significance: 'Exemplifies neoclassical ideals of reason and harmony. Demonstrates revival of classical forms with modern engineering. Influenced civic architecture.',
-                        structure: 'Classical columns, rational proportions, innovative dome',
-                        period: 'Neoclassical'
-                    },
-                    {
-                        id: 'british-museum',
-                        name: 'British Museum',
-                        year: '1847 CE',
-                        location: 'London, England',
-                        architect: 'Robert Smirke',
-                        description: 'Features a monumental Greek Revival facade with 44 Ionic columns spanning 344 feet. The interior features the famous Reading Room with its cast-iron dome. Represents the height of neoclassical civic architecture.',
-                        significance: 'Demonstrates neoclassical principles applied to modern institutions. Shows integration of Greek Revival aesthetics with contemporary technology.',
-                        structure: 'Greek Revival, classical colonnade, cast-iron dome',
-                        period: 'Neoclassical'
-                    }
-                ]
-            },
-            {
-                period: 'Industrial & Iron',
-                year: '1850-1900',
-                buildings: [
-                    {
-                        id: 'eiffel-tower',
-                        name: 'Eiffel Tower',
-                        year: '1889 CE',
-                        location: 'Paris, France',
-                        architect: 'Gustave Eiffel',
-                        description: 'A revolutionary iron lattice structure 1,083 feet tall, the Eiffel Tower challenged architectural conventions. Its exposed iron framework, mathematical proportions, and transparent design represented a radical departure from traditional masonry construction. It became an icon of industrial modernity.',
-                        significance: 'Proved that engineering could be beautiful. Demonstrated structural innovation as aesthetic principle. Influenced modernist architecture profoundly.',
-                        structure: 'Wrought iron lattice, innovative triangulated bracing',
-                        period: 'Industrial & Iron'
-                    },
-                    {
-                        id: 'crystal-palace',
-                        name: 'Crystal Palace',
-                        year: '1851 CE',
-                        location: 'London, England',
-                        architect: 'Joseph Paxton',
-                        description: 'A prefabricated glass and iron structure housing the Great Exhibition. At 1,848 feet long, it pioneered modular construction and demonstrated that new materials could create unprecedented spatial transparency and light.',
-                        significance: 'Revolutionary use of industrial materials for architecture. Demonstrated prefabrication possibilities. Influenced glass and iron architecture.',
-                        structure: 'Iron framework, prefabricated glass panels, innovative assembly',
-                        period: 'Industrial & Iron'
-                    }
-                ]
-            },
-            {
-                period: 'Art Nouveau',
-                year: '1880-1910',
-                buildings: [
-                    {
-                        id: 'casa-batllo',
-                        name: 'Casa Batlló',
-                        year: '1906 CE',
-                        location: 'Barcelona, Spain',
-                        architect: 'Antoni Gaudí',
-                        description: 'A residential masterpiece featuring undulating facades, organic curves, and colorful ceramic decoration. The interior spaces flow seamlessly with sculptural walls, skylights, and innovative use of natural light. Every element celebrates nature and craftsmanship.',
-                        significance: 'Exemplifies Art Nouveau principles of organic form and craftsmanship. Demonstrates integration of structure and decoration. Influenced expressionist architecture.',
-                        structure: 'Stone, iron, ceramic, innovative sculptural surfaces',
-                        period: 'Art Nouveau'
-                    }
-                ]
-            },
-            {
-                period: 'Modernism',
-                year: '1900-1970',
-                buildings: [
-                    {
-                        id: 'villa-savoye',
-                        name: 'Villa Savoye',
-                        year: '1931 CE',
-                        location: 'Poissy, France',
-                        architect: 'Le Corbusier',
-                        description: 'An icon of International Style modernism, Villa Savoye demonstrates Le Corbusier\'s "five points of architecture": pilotis, free plan, free facade, ribbon windows, and roof garden. Its pure white walls, geometric forms, and functional clarity represent modernist ideals.',
-                        significance: 'Defined modernist residential architecture. Demonstrated how industrial materials and methods could create poetry. Influenced architects globally.',
-                        structure: 'Reinforced concrete, steel, glass, innovative planning',
-                        period: 'Modernism'
-                    },
-                    {
-                        id: 'bauhaus-school',
-                        name: 'Bauhaus School',
-                        year: '1926 CE',
-                        location: 'Dessau, Germany',
-                        architect: 'Walter Gropius',
-                        description: 'A functionalist building embodying Bauhaus principles of unity between art and craft. The design demonstrates how industrial materials, rational planning, and aesthetic refinement could work together. Glass facades express transparency and democratic ideals.',
-                        significance: 'Epitomizes modernist educational architecture. Demonstrates integration of theory and practice. Influenced design education worldwide.',
-                        structure: 'Reinforced concrete, steel, glass, modernist composition',
-                        period: 'Modernism'
-                    },
-                    {
-                        id: 'guggenheim-nyc',
-                        name: 'Guggenheim Museum (NYC)',
-                        year: '1959 CE',
-                        location: 'New York, USA',
-                        architect: 'Frank Lloyd Wright',
-                        description: 'A sculptural concrete spiral that challenges conventional museum design. Visitors descend gradually through continuous spiral ramps, with artwork displayed against curved walls. The organic form, structural innovation, and spatial experience revolutionized museum design.',
-                        significance: 'Demonstrated that modernism could be sculptural and organic. Showed how architecture could be functionally and aesthetically unified. Influenced expressionist and organic architecture.',
-                        structure: 'Reinforced concrete shell, innovative spiral form',
-                        period: 'Modernism'
-                    }
-                ]
-            },
-            {
-                period: 'Brutalism',
-                year: '1950-1980',
-                buildings: [
-                    {
-                        id: 'barbican-centre',
-                        name: 'Barbican Centre',
-                        year: '1982 CE',
-                        location: 'London, England',
-                        architect: 'Chamberlin, Powell & Bon',
-                        description: 'A massive brutalist complex featuring fortress-like exposed concrete towers, water features, and labyrinthine pathways. The building celebrates concrete as a material and creates fortress-like urban context that prioritizes cultural function.',
-                        significance: 'Represents mature Brutalism at scale. Demonstrates how concrete can express power and permanence. Influenced contemporary monumental architecture.',
-                        structure: 'Massive exposed concrete, fortress-like composition',
-                        period: 'Brutalism'
-                    },
-                    {
-                        id: 'habitat-67',
-                        name: 'Habitat 67',
-                        year: '1967 CE',
-                        location: 'Montreal, Canada',
-                        architect: 'Moshe Safdie',
-                        description: 'A revolutionary modular housing complex of 354 prefabricated concrete units stacked at angles. It demonstrates how industrial production methods could create humane housing with private outdoor spaces. The sculptural form expresses structural system.',
-                        significance: 'Pioneered modular, prefabricated housing at scale. Demonstrated that mass housing could be architecturally distinguished. Influenced contemporary modular design.',
-                        structure: 'Prefabricated concrete modules, innovative stacking system',
-                        period: 'Brutalism'
-                    }
-                ]
-            },
-            {
-                period: 'High-Tech',
-                year: '1970-2000',
-                buildings: [
-                    {
-                        id: 'pompidou-centre',
-                        name: 'Pompidou Centre',
-                        year: '1977 CE',
-                        location: 'Paris, France',
-                        architect: 'Piano & Rogers',
-                        description: 'A radical building with all mechanical systems expressed on the exterior—exposed steel frame, colorful pipes, external escalators. It celebrates the building\'s functional systems as primary aesthetic elements, inverting conventional design priorities.',
-                        significance: 'Defined High-Tech architecture. Demonstrated that technical systems could be beautiful. Challenged assumptions about architectural expression.',
-                        structure: 'Exposed steel frame, mechanical expression, innovative design',
-                        period: 'High-Tech'
-                    }
-                ]
-            },
-            {
-                period: 'Postmodernism',
-                year: '1970-1990',
-                buildings: [
-                    {
-                        id: 'piazza-ditalia',
-                        name: 'Piazza d\'Italia',
-                        year: '1978 CE',
-                        location: 'New Orleans, USA',
-                        architect: 'Charles Moore',
-                        description: 'A postmodern plaza combining classical elements (arcades, columns, map of Italy) with contemporary materials (colorful neon, stainless steel). It playfully references history while embracing contemporary aesthetics and popular culture.',
-                        significance: 'Exemplifies postmodern irony and eclecticism. Demonstrated rejection of pure modernism. Challenged notion that architecture must be serious.',
-                        structure: 'Mixed materials, historical references, contemporary expression',
-                        period: 'Postmodernism'
-                    }
-                ]
-            },
-            {
-                period: 'Contemporary',
-                year: '2000-Present',
-                buildings: [
-                    {
-                        id: 'louvre-pyramid',
-                        name: 'Louvre Museum Pyramid',
-                        year: '1989 CE',
-                        location: 'Paris, France',
-                        architect: 'I.M. Pei',
-                        description: 'A 71-foot glass and steel pyramid contrasting dramatically with the 18th-century Louvre palace. Represents contemporary addition to historical context through bold contrast and modern materials. The transparent structure symbolizes access and clarity.',
-                        significance: 'Demonstrated postmodern dialogue between old and new. Showed that contemporary architecture could enhance historical sites. Influenced heritage additions.',
-                        structure: 'Glass pyramid, steel framework, transparent design',
-                        period: 'Contemporary'
-                    },
-                    {
-                        id: 'burj-khalifa',
-                        name: 'Burj Khalifa',
-                        year: '2010 CE',
-                        location: 'Dubai, UAE',
-                        architect: 'Adrian Smith',
-                        description: 'The world\'s tallest building at 2,717 feet. Features an innovative bundled tube structure inspired by flowers, reducing wind sway through triangulated forms. The tapered, spiraling form expresses structural efficiency while creating visual drama.',
-                        significance: 'Demonstrates contemporary engineering achieving unprecedented heights. Shows how structural innovation can be aesthetically expressive. Represents globalization of architecture.',
-                        structure: 'Advanced steel and concrete, innovative bundled tube system',
-                        period: 'Contemporary'
-                    },
-                    {
-                        id: 'beijing-national-stadium',
-                        name: 'Beijing National Stadium',
-                        year: '2008 CE',
-                        location: 'Beijing, China',
-                        architect: 'Herzog & de Meuron',
-                        description: 'A sculptural steel structure resembling a bird\'s nest, the stadium uses innovative computer-designed geometry and fabrication. The exposed structural framework becomes the primary aesthetic element, celebrating engineering as art.',
-                        significance: 'Represents contemporary use of digital design and fabrication. Shows how global collaboration creates architectural icons. Influences sports architecture globally.',
-                        structure: 'Complex steel framework, digital design, innovative geometry',
-                        period: 'Contemporary'
-                    }
-                ]
-            }
-        ];
+  <!-- COMPARE VIEW -->
+  <div id="compare-view">
+    <div class="compare-header">
+      <div class="compare-title">Compare</div>
+      <div class="compare-hint">Select up to 2 buildings from the timeline</div>
+    </div>
+    <div class="compare-slots">
+      <div class="compare-slot" id="slot-a">
+        <div class="compare-slot-label">Building A</div>
+        <div class="compare-slot-empty">None selected</div>
+      </div>
+      <div class="compare-vs">VS</div>
+      <div class="compare-slot" id="slot-b">
+        <div class="compare-slot-label">Building B</div>
+        <div class="compare-slot-empty">None selected</div>
+      </div>
+    </div>
+    <div id="compare-table-wrap"></div>
+    <div style="margin-top:20px">
+      <div class="compare-notes-label">Comparison Notes</div>
+      <textarea id="compare-notes" placeholder="Write your analysis here..."></textarea>
+    </div>
+    <div style="margin-top:12px">
+      <button class="btn-clear-compare" onclick="clearCompare()">Clear Selection</button>
+    </div>
+  </div>
 
-        // Initialize App
-        function init() {
-            renderTimeline();
-            populateCompareSelects();
-            loadLocalStorage();
-        }
+</div>
 
-        // Render Timeline
-        function renderTimeline() {
-            const container = document.getElementById('timelineContainer');
-            container.innerHTML = '';
+<!-- SIDE PANEL -->
+<div id="side-panel">
+  <div class="panel-header">
+    <div class="panel-title" id="panel-label">Building Detail</div>
+    <button class="btn-close" onclick="closePanel()">x</button>
+  </div>
+  <div class="panel-body" id="panel-body"></div>
+</div>
 
-            architectureData.forEach(era => {
-                const periodBlock = document.createElement('div');
-                periodBlock.className = 'period-block';
-                periodBlock.innerHTML = `
-                    <div class="period-content">
-                        <div class="period-card">
-                            <div class="period-title">${era.period}</div>
-                            <div style="color: #a0a0a0; margin-bottom: 1rem;">${era.year}</div>
-                            <div>
-                                ${era.buildings.map(building => `
-                                    <div class="building-item" onclick="showDetail('${building.id}')">
-                                        <div>
-                                            <div class="building-name">${building.name}</div>
-                                            <div class="building-year">${building.year} • ${building.location}</div>
-                                        </div>
-                                        <button class="favorite-btn ${isFavourited(building.id) ? 'saved' : ''}" onclick="event.stopPropagation(); toggleFavourite('${building.id}', '${building.name}', '${era.period}')">${isFavourited(building.id) ? '❤️' : '🤍'}</button>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="period-marker">
-                        <div class="period-dot"></div>
-                    </div>
-                `;
-                container.appendChild(periodBlock);
-            });
-        }
+<!-- COMPARE BADGE -->
+<button id="compare-badge" onclick="switchView('compare')">
+  <span class="badge-dot" id="compare-count">0</span>
+  Compare Selected
+</button>
 
-        // Find Building by ID
-        function findBuilding(id) {
-            for (const era of architectureData) {
-                const building = era.buildings.find(b => b.id === id);
-                if (building) return building;
-            }
-            return null;
-        }
+<script>
+// ---- DATA ----
+const periods = [
+  {
+    id: 'Ancient',
+    name: 'Ancient',
+    years: 'c.3000 BCE - 400 CE',
+    buildings: [
+      {
+        id: 'a1',
+        name: 'Great Pyramid of Giza',
+        year: '2560 BCE',
+        location: 'Giza, Egypt',
+        style: 'Ancient Egyptian',
+        architect: 'Hemiunu',
+        material: 'Limestone, Granite',
+        height: '138.8m',
+        desc: 'The oldest of the Seven Wonders of the Ancient World, standing as a testament to Egyptian engineering and cosmological precision.',
+        features: ['Pyramid form', 'Funerary complex', 'Astronomical alignment', 'Grand scale']
+      },
+      {
+        id: 'a2',
+        name: 'Parthenon',
+        year: '438 BCE',
+        location: 'Athens, Greece',
+        style: 'Classical Greek',
+        architect: 'Ictinus, Callicrates',
+        material: 'Pentelic Marble',
+        height: '13.7m',
+        desc: 'Dedicated to Athena, the Parthenon exemplifies Doric order refinement. Subtle optical corrections create the illusion of perfect geometry.',
+        features: ['Doric columns', 'Optical refinements', 'Entasis', 'Peristyle plan']
+      }
+    ]
+  },
+  {
+    id: 'Classical',
+    name: 'Greco-Roman Classical',
+    years: 'c.500 BCE - 300 CE',
+    buildings: [
+      {
+        id: 'c1',
+        name: 'The Colosseum',
+        year: '80 CE',
+        location: 'Rome, Italy',
+        style: 'Roman Imperial',
+        architect: 'Vespasian, Domitian',
+        material: 'Travertine, Concrete',
+        height: '48m',
+        desc: 'An amphitheatre of staggering scale, combining Doric, Ionic, and Corinthian orders across its four stories. Capacity of 80,000 spectators.',
+        features: ['Elliptical plan', 'Mixed orders', 'Concrete vault', 'Hypogeum']
+      },
+      {
+        id: 'c2',
+        name: 'Pantheon',
+        year: '125 CE',
+        location: 'Rome, Italy',
+        style: 'Roman Classical',
+        architect: 'Emperor Hadrian',
+        material: 'Concrete, Marble',
+        height: '43.3m',
+        desc: 'The unreinforced concrete dome remains the largest in the world. The oculus connects the building to the cosmos above.',
+        features: ['Rotunda', 'Oculus', 'Unreinforced dome', 'Coffered ceiling']
+      }
+    ]
+  },
+  {
+    id: 'Medieval',
+    name: 'Medieval',
+    years: 'c.500 - 1400 CE',
+    buildings: [
+      {
+        id: 'm1',
+        name: 'Notre-Dame de Paris',
+        year: '1345 CE',
+        location: 'Paris, France',
+        style: 'French Gothic',
+        architect: 'Jean de Chelles',
+        material: 'Limestone',
+        height: '69m',
+        desc: 'A masterpiece of Gothic architecture featuring flying buttresses, pointed arches, and rose windows filtering sacred light.',
+        features: ['Flying buttresses', 'Pointed arches', 'Rose windows', 'Gargoyles']
+      },
+      {
+        id: 'm2',
+        name: 'Hagia Sophia',
+        year: '537 CE',
+        location: 'Istanbul, Turkey',
+        style: 'Byzantine',
+        architect: 'Isidore of Miletus',
+        material: 'Brick, Marble',
+        height: '55.6m',
+        desc: 'For a thousand years the largest cathedral in the world. The floating dome is achieved through pendentives, a revolutionary structural solution.',
+        features: ['Floating dome', 'Pendentives', 'Golden mosaics', 'Half-domes']
+      }
+    ]
+  },
+  {
+    id: 'Renaissance',
+    name: 'Renaissance',
+    years: 'c.1400 - 1600 CE',
+    buildings: [
+      {
+        id: 'r1',
+        name: 'Florence Cathedral Dome',
+        year: '1436 CE',
+        location: 'Florence, Italy',
+        style: 'Early Renaissance',
+        architect: 'Filippo Brunelleschi',
+        material: 'Brick, Sandstone',
+        height: '114m',
+        desc: 'Brunelleschi solved an impossible engineering challenge. Built without centering, using a double-shell herringbone brick pattern.',
+        features: ['Double shell', 'Herringbone brickwork', 'Self-supporting', 'Lantern']
+      },
+      {
+        id: 'r2',
+        name: "St. Peter's Basilica",
+        year: '1626 CE',
+        location: 'Vatican City',
+        style: 'High Renaissance',
+        architect: 'Michelangelo, Bramante',
+        material: 'Travertine, Marble',
+        height: '136.6m',
+        desc: 'The largest church in the world, representing the culmination of Renaissance architectural vision across multiple generations.',
+        features: ['Giant dome', 'Colossal order', 'Greek cross plan', 'Barrel vaults']
+      }
+    ]
+  },
+  {
+    id: 'Baroque',
+    name: 'Baroque',
+    years: 'c.1600 - 1750 CE',
+    buildings: [
+      {
+        id: 'b1',
+        name: 'Palace of Versailles',
+        year: '1682 CE',
+        location: 'Versailles, France',
+        style: 'French Baroque',
+        architect: 'Jules Hardouin-Mansart',
+        material: 'Stone, Marble, Gold',
+        height: '25m',
+        desc: 'The ultimate expression of royal absolutism. Architecture, landscape, and interior design unified into a total work of art.',
+        features: ['Hall of Mirrors', 'Formal gardens', 'Axial symmetry', 'State apartments']
+      }
+    ]
+  },
+  {
+    id: 'Neoclassical',
+    name: 'Neoclassical',
+    years: 'c.1750 - 1850 CE',
+    buildings: [
+      {
+        id: 'n1',
+        name: 'The Pantheon, Paris',
+        year: '1790 CE',
+        location: 'Paris, France',
+        style: 'French Neoclassical',
+        architect: 'Jacques-Germain Soufflot',
+        material: 'Limestone',
+        height: '83m',
+        desc: 'A rational, austere response to Baroque excess. Soufflot achieved Gothic structural lightness through Classical vocabulary.',
+        features: ['Portico', 'Corinthian columns', 'Pendentive dome', 'Crypt']
+      },
+      {
+        id: 'n2',
+        name: 'Brandenburg Gate',
+        year: '1791 CE',
+        location: 'Berlin, Germany',
+        style: 'Neoclassical',
+        architect: 'Carl Gotthard Langhans',
+        material: 'Sandstone',
+        height: '26m',
+        desc: 'Modelled on the Propylaea of Athens, the Gate became a symbol of division and reunification across centuries.',
+        features: ['Doric columns', 'Quadriga sculpture', 'Five passageways', 'Attic storey']
+      }
+    ]
+  },
+  {
+    id: 'Industrial',
+    name: 'Industrial & Victorian',
+    years: 'c.1750 - 1900 CE',
+    buildings: [
+      {
+        id: 'i1',
+        name: 'Crystal Palace',
+        year: '1851 CE',
+        location: 'London, UK',
+        style: 'Industrial',
+        architect: 'Joseph Paxton',
+        material: 'Cast Iron, Glass',
+        height: '39m',
+        desc: 'A revolutionary modular prefabricated structure built in 9 months. Pioneered the idea of architecture as industrial production.',
+        features: ['Prefabrication', 'Cast iron frame', 'Plate glass', 'Modular system']
+      },
+      {
+        id: 'i2',
+        name: 'Eiffel Tower',
+        year: '1889 CE',
+        location: 'Paris, France',
+        style: 'Industrial Iron',
+        architect: 'Gustave Eiffel',
+        material: 'Puddled Iron',
+        height: '330m',
+        desc: 'Designed as a temporary structure, it became the defining icon of structural rationalism. 18,038 individual iron parts.',
+        features: ['Lattice structure', 'Wind resistance', 'Hydraulic lifts', 'Iron rivets']
+      }
+    ]
+  },
+  {
+    id: 'Modernism',
+    name: 'Modernism',
+    years: 'c.1900 - 1970 CE',
+    buildings: [
+      {
+        id: 'mo1',
+        name: 'Villa Savoye',
+        year: '1931 CE',
+        location: 'Poissy, France',
+        style: 'International Modern',
+        architect: 'Le Corbusier',
+        material: 'Reinforced Concrete',
+        height: '11m',
+        desc: 'A manifesto built in concrete. Five Points of Architecture realised: pilotis, roof garden, free plan, ribbon windows, free facade.',
+        features: ['Pilotis', 'Free plan', 'Ribbon windows', 'Roof garden']
+      },
+      {
+        id: 'mo2',
+        name: 'Farnsworth House',
+        year: '1951 CE',
+        location: 'Illinois, USA',
+        style: 'Miesian Modernism',
+        architect: 'Ludwig Mies van der Rohe',
+        material: 'Steel, Glass',
+        height: '3m',
+        desc: 'The purest expression of less is more. Eight steel columns support a floating glass pavilion above the floodplain.',
+        features: ['Universal space', 'Steel frame', 'Full glass walls', 'Elevated plane']
+      },
+      {
+        id: 'mo3',
+        name: 'Fallingwater',
+        year: '1939 CE',
+        location: 'Pennsylvania, USA',
+        style: 'Organic Modern',
+        architect: 'Frank Lloyd Wright',
+        material: 'Reinforced Concrete, Stone',
+        height: '8m',
+        desc: 'Cantilevered concrete terraces hover above a waterfall. Architecture integrated with landscape as a single continuous experience.',
+        features: ['Cantilevered terraces', 'Natural stone', 'Organic integration', 'Open plan']
+      }
+    ]
+  },
+  {
+    id: 'Contemporary',
+    name: 'Contemporary',
+    years: 'c.1970 - Present',
+    buildings: [
+      {
+        id: 'co1',
+        name: 'Centre Pompidou',
+        year: '1977 CE',
+        location: 'Paris, France',
+        style: 'High-Tech',
+        architect: 'Piano + Rogers',
+        material: 'Steel, Glass',
+        height: '42m',
+        desc: 'Infrastructure made spectacle. Structure, ducts, and circulation turned inside-out and colour-coded on the exterior.',
+        features: ['Exposed structure', 'Colour-coded systems', 'Flexible interior', 'Escalator facade']
+      },
+      {
+        id: 'co2',
+        name: 'Guggenheim Museum Bilbao',
+        year: '1997 CE',
+        location: 'Bilbao, Spain',
+        style: 'Deconstructivist',
+        architect: 'Frank Gehry',
+        material: 'Titanium, Limestone',
+        height: '50m',
+        desc: 'Titanium scales shift with light conditions. A building that defies categorisation — sculpture, landmark, urban catalyst.',
+        features: ['Titanium cladding', 'Sculptural form', 'Parametric design', 'River integration']
+      },
+      {
+        id: 'co3',
+        name: 'CCTV Headquarters',
+        year: '2012 CE',
+        location: 'Beijing, China',
+        style: 'Structural Expressionism',
+        architect: 'Rem Koolhaas (OMA)',
+        material: 'Steel, Glass',
+        height: '234m',
+        desc: 'A looping three-dimensional form challenging the typology of the tower. Structural forces made visible through the diagonal grid skin.',
+        features: ['Continuous loop', 'Diagonal grid', 'Cantilever', 'Structural skin']
+      },
+      {
+        id: 'co4',
+        name: 'The Shard',
+        year: '2012 CE',
+        location: 'London, UK',
+        style: 'Neo-futurism',
+        architect: 'Renzo Piano',
+        material: 'Glass, Steel',
+        height: '310m',
+        desc: 'A vertical city of layered uses. Shards of glass lean inward, never quite meeting at the apex, dissolving into sky.',
+        features: ['Shard form', 'Mixed use', 'Glass facets', 'Open apex']
+      }
+    ]
+  }
+];
 
-        // Show Detail Panel
-        function showDetail(id) {
-            const building = findBuilding(id);
-            if (!building) return;
+// ---- STATE ----
+let favourites = JSON.parse(localStorage.getItem('arch_favs') || '[]');
+let compareList = JSON.parse(localStorage.getItem('arch_compare') || '[]');
+let boardNotes = JSON.parse(localStorage.getItem('arch_notes') || '{}');
+let compareNotesSaved = localStorage.getItem('arch_compare_notes') || '';
+let currentView = 'timeline';
+let selectedBuilding = null;
 
-            const panel = document.getElementById('detailPanel');
-            const content = document.getElementById('detailContent');
-            content.innerHTML = `
-                <div class="detail-title">${building.name}</div>
-                <div class="detail-info">📍 ${building.location}</div>
-                <div class="detail-info">📅 ${building.year}</div>
-                <div class="detail-info">👨‍🏫 ${building.architect}</div>
+// ---- HELPERS ----
+function getBuildingById(id) {
+  for (const p of periods) {
+    const b = p.buildings.find(b => b.id === id);
+    if (b) return { building: b, period: p };
+  }
+  return null;
+}
 
-                <div class="detail-label">About</div>
-                <div class="detail-description">${building.description}</div>
+function getAllBuildings() {
+  return periods.flatMap(p => p.buildings.map(b => ({ ...b, period: p })));
+}
 
-                <div class="detail-label">Significance</div>
-                <div class="detail-description">${building.significance}</div>
+function save() {
+  localStorage.setItem('arch_favs', JSON.stringify(favourites));
+  localStorage.setItem('arch_compare', JSON.stringify(compareList));
+  localStorage.setItem('arch_notes', JSON.stringify(boardNotes));
+}
 
-                <div class="detail-label">Structure</div>
-                <div class="detail-description">${building.structure}</div>
+// ---- ARCHITECTURAL SVG SILHOUETTES ----
+function getSVG(style) {
+  const svgs = {
+    'Ancient Egyptian': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><polygon points="100,5 10,90 190,90" fill="none" stroke="#999" stroke-width="1.5"/><line x1="100" y1="5" x2="100" y2="90" stroke="#ccc" stroke-width="0.5"/><line x1="55" y1="47" x2="145" y2="47" stroke="#ccc" stroke-width="0.5"/></svg>`,
+    'Classical Greek': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="70" width="160" height="6" fill="none" stroke="#999" stroke-width="1.5"/><rect x="10" y="76" width="180" height="5" fill="none" stroke="#999" stroke-width="1.5"/>${Array.from({length:8},(_,i)=>`<rect x="${25+i*21}" y="20" width="8" height="50" fill="none" stroke="#999" stroke-width="1"/>`).join('')}<polygon points="30,20 100,3 170,20" fill="none" stroke="#999" stroke-width="1.5"/></svg>`,
+    'Roman Imperial': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="85" rx="90" ry="12" fill="none" stroke="#999" stroke-width="1.5"/><path d="M 10 85 Q 10 20 100 18 Q 190 20 190 85" fill="none" stroke="#999" stroke-width="1.5"/><rect x="15" y="70" width="170" height="15" fill="none" stroke="#ccc" stroke-width="0.5"/></svg>`,
+    'Roman Classical': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><path d="M 50 88 L 50 50 Q 100 8 150 50 L 150 88 Z" fill="none" stroke="#999" stroke-width="1.5"/><circle cx="100" cy="55" r="8" fill="none" stroke="#aaa" stroke-width="1"/><rect x="40" y="88" width="120" height="5" fill="none" stroke="#999" stroke-width="1.5"/></svg>`,
+    'French Gothic': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><line x1="100" y1="3" x2="100" y2="90" stroke="#999" stroke-width="1.5"/><path d="M60,90 L60,40 Q100,5 140,40 L140,90" fill="none" stroke="#999" stroke-width="1.5"/><path d="M75,90 L75,55 Q100,35 125,55 L125,90" fill="none" stroke="#aaa" stroke-width="1"/><circle cx="100" cy="58" r="10" fill="none" stroke="#aaa" stroke-width="1"/></svg>`,
+    'Byzantine': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><path d="M 30 88 L 30 55 Q 100 5 170 55 L 170 88 Z" fill="none" stroke="#999" stroke-width="1.5"/><path d="M 60 88 L 60 60 Q 100 30 140 60 L 140 88" fill="none" stroke="#aaa" stroke-width="1"/><circle cx="100" cy="48" r="5" fill="none" stroke="#bbb" stroke-width="1"/></svg>`,
+    'Early Renaissance': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><path d="M 50 90 L 50 50 Q 100 5 150 50 L 150 90 Z" fill="none" stroke="#999" stroke-width="1.5"/><line x1="100" y1="5" x2="100" y2="25" stroke="#999" stroke-width="1.5"/><rect x="48" y="85" width="104" height="5" fill="none" stroke="#aaa" stroke-width="1"/></svg>`,
+    'High Renaissance': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><path d="M 60 90 L 60 55 Q 100 10 140 55 L 140 90" fill="none" stroke="#999" stroke-width="1.5"/><rect x="40" y="85" width="120" height="5" fill="none" stroke="#aaa" stroke-width="1"/>${Array.from({length:6},(_,i)=>`<line x1="${40+i*24}" y1="85" x2="${40+i*24}" y2="70" stroke="#ccc" stroke-width="1"/>`).join('')}</svg>`,
+    'French Baroque': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="50" width="180" height="40" fill="none" stroke="#999" stroke-width="1.5"/><rect x="30" y="30" width="140" height="20" fill="none" stroke="#aaa" stroke-width="1"/><rect x="50" y="10" width="100" height="20" fill="none" stroke="#aaa" stroke-width="1"/>${Array.from({length:9},(_,i)=>`<line x1="${20+i*20}" y1="90" x2="${20+i*20}" y2="50" stroke="#ccc" stroke-width="0.5"/>`).join('')}</svg>`,
+    'French Neoclassical': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><path d="M 60 68 L 60 55 Q 100 15 140 55 L 140 68" fill="none" stroke="#999" stroke-width="1.5"/>${Array.from({length:6},(_,i)=>`<rect x="${30+i*24}" y="68" width="7" height="20" fill="none" stroke="#999" stroke-width="1"/>`).join('')}<rect x="15" y="88" width="170" height="4" fill="none" stroke="#aaa" stroke-width="1"/></svg>`,
+    'Neoclassical': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">${Array.from({length:5},(_,i)=>`<rect x="${30+i*30}" y="20" width="10" height="65" fill="none" stroke="#999" stroke-width="1.5"/>`).join('')}<rect x="15" y="85" width="170" height="5" fill="none" stroke="#999" stroke-width="1.5"/><rect x="25" y="15" width="150" height="5" fill="none" stroke="#aaa" stroke-width="1"/></svg>`,
+    'Industrial': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><path d="M 10 88 Q 100 5 190 88" fill="none" stroke="#ccc" stroke-width="0.8"/>${Array.from({length:7},(_,i)=>`<line x1="${20+i*26}" y1="88" x2="${20+i*26}" y2="${30+i*5}" stroke="#999" stroke-width="1"/>`).join('')}<rect x="10" y="85" width="180" height="3" fill="none" stroke="#999" stroke-width="1.5"/></svg>`,
+    'Industrial Iron': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><path d="M 40 95 Q 60 40 100 3 Q 140 40 160 95" fill="none" stroke="#999" stroke-width="1.5"/><path d="M 50 95 Q 65 55 100 20 Q 135 55 150 95" fill="none" stroke="#ccc" stroke-width="0.8"/><line x1="40" y1="95" x2="160" y2="95" stroke="#999" stroke-width="1.5"/></svg>`,
+    'International Modern': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="30" width="140" height="55" fill="none" stroke="#999" stroke-width="1.5"/><line x1="30" y1="20" x2="170" y2="20" stroke="#aaa" stroke-width="1"/><line x1="30" y1="12" x2="30" y2="30" stroke="#aaa" stroke-width="1"/><line x1="170" y1="12" x2="170" y2="30" stroke="#aaa" stroke-width="1"/>${Array.from({length:5},(_,i)=>`<line x1="${30}" y1="${35+i*10}" x2="${170}" y2="${35+i*10}" stroke="#e0e0e0" stroke-width="0.5"/>`).join('')}</svg>`,
+    'Miesian Modernism': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><rect x="25" y="40" width="150" height="45" fill="none" stroke="#999" stroke-width="1.5"/><line x1="15" y1="37" x2="185" y2="37" stroke="#aaa" stroke-width="1"/><line x1="15" y1="88" x2="185" y2="88" stroke="#aaa" stroke-width="1"/><line x1="25" y1="37" x2="25" y2="90" stroke="#ccc" stroke-width="0.5"/><line x1="175" y1="37" x2="175" y2="90" stroke="#ccc" stroke-width="0.5"/></svg>`,
+    'Organic Modern': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><line x1="20" y1="60" x2="60" y2="60" stroke="#999" stroke-width="1.5"/><line x1="60" y1="60" x2="60" y2="40" stroke="#999" stroke-width="1.5"/><line x1="60" y1="40" x2="160" y2="40" stroke="#999" stroke-width="1.5"/><line x1="160" y1="40" x2="180" y2="40" stroke="#aaa" stroke-width="1" stroke-dasharray="3,3"/><line x1="90" y1="40" x2="90" y2="70" stroke="#999" stroke-width="1.5"/><line x1="40" y1="70" x2="160" y2="70" stroke="#999" stroke-width="1.5"/><path d="M 100 85 Q 120 75 140 85" fill="none" stroke="#ccc" stroke-width="1"/></svg>`,
+    'High-Tech': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="10" width="140" height="80" fill="none" stroke="#999" stroke-width="1.5"/>${Array.from({length:5},(_,i)=>`<line x1="30" y1="${10+i*16}" x2="170" y2="${10+i*16}" stroke="#ccc" stroke-width="0.8"/><rect x="10" y="${12+i*16}" width="12" height="12" fill="none" stroke="#aaa" stroke-width="1"/><rect x="178" y="${12+i*16}" width="12" height="12" fill="none" stroke="#aaa" stroke-width="1"/>`).join('')}</svg>`,
+    'Deconstructivist': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><path d="M 20 90 Q 60 30 100 20 Q 130 15 180 50 Q 160 80 120 90 Z" fill="none" stroke="#999" stroke-width="1.5"/><path d="M 50 90 Q 80 50 130 40 Q 160 35 185 60" fill="none" stroke="#ccc" stroke-width="0.8"/></svg>`,
+    'Structural Expressionism': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><path d="M 60 90 L 60 10 L 140 10 L 140 90" fill="none" stroke="#999" stroke-width="1.5"/><path d="M 60 10 L 140 90" stroke="#aaa" stroke-width="0.8"/><path d="M 140 10 L 60 90" stroke="#aaa" stroke-width="0.8"/><rect x="60" y="10" width="80" height="80" fill="none" stroke="#ccc" stroke-width="0.5"/></svg>`,
+    'Neo-futurism': `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><path d="M 80 90 L 90 10 L 110 10 L 120 90" fill="none" stroke="#999" stroke-width="1.5"/><path d="M 90 10 L 110 10" stroke="#aaa" stroke-width="0.8"/><rect x="78" y="85" width="44" height="5" fill="none" stroke="#999" stroke-width="1.5"/>${Array.from({length:5},(_,i)=>`<line x1="${82+i*7}" y1="85" x2="${85+i*7}" y2="${20+i*12}" stroke="#ddd" stroke-width="0.5"/>`).join('')}</svg>`
+  };
+  return svgs[style] || `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="20" width="140" height="70" fill="none" stroke="#ccc" stroke-width="1.5"/></svg>`;
+}
 
-                <button class="btn-primary" style="margin-top: 1.5rem; width: 100%;" onclick="toggleFavourite('${building.id}', '${building.name}', '${building.period}')">
-                    ${isFavourited(building.id) ? '❤️ Saved to Board' : '🤍 Add to Board'}
-                </button>
-            `;
-            panel.classList.add('open');
-        }
+// ---- RENDER ----
+function renderTimeline(filter = 'all') {
+  const container = document.getElementById('timeline-view');
+  container.innerHTML = '';
+  let idx = 1;
+  periods.forEach(p => {
+    if (filter !== 'all' && p.id !== filter) return;
+    const section = document.createElement('div');
+    section.className = 'period-section';
+    section.dataset.period = p.id;
 
-        // Close Detail Panel
-        function closeDetailPanel() {
-            document.getElementById('detailPanel').classList.remove('open');
-        }
+    section.innerHTML = `
+      <div class="period-header">
+        <div class="period-year">${p.years}</div>
+        <div class="period-name">${p.name}</div>
+        <div class="period-count">${p.buildings.length} structure${p.buildings.length>1?'s':''}</div>
+      </div>
+      <div class="buildings-grid">
+        ${p.buildings.map(b => buildingCard(b, p, idx++)).join('')}
+      </div>
+    `;
+    container.appendChild(section);
+  });
+  observeSections();
+}
 
-        // Favourite System
-        function toggleFavourite(id, name, period) {
-            let favourites = JSON.parse(localStorage.getItem('favourites')) || [];
-            const index = favourites.findIndex(f => f.id === id);
+function buildingCard(b, p, idx) {
+  const isFav = favourites.includes(b.id);
+  const inComp = compareList.includes(b.id);
+  return `
+    <div class="building-card ${selectedBuilding === b.id ? 'selected' : ''}" id="card-${b.id}">
+      <div class="card-index">${String(idx).padStart(2,'0')}</div>
+      <div class="card-visual">${getSVG(b.style)}</div>
+      <div class="card-body" onclick="openDetail('${b.id}')">
+        <div class="card-name">${b.name}</div>
+        <div class="card-meta">
+          <span class="card-location">${b.location}</span>
+          <span class="card-year-badge">${b.year}</span>
+        </div>
+      </div>
+      <div class="card-desc" onclick="openDetail('${b.id}')">${b.desc.substring(0,100)}...</div>
+      <div class="card-footer">
+        <span class="card-style-tag">${b.style}</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="btn-compare ${inComp?'in-compare':''}" onclick="toggleCompare('${b.id}')" id="cmpbtn-${b.id}">${inComp?'Selected':'+ Compare'}</button>
+          <button class="btn-fav ${isFav?'active':''}" onclick="toggleFav('${b.id}')" id="favbtn-${b.id}" title="Save to board">
+            <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 10.5L1.5 6C0.5 5 0.5 3.5 1.5 2.5C2.5 1.5 4 1.5 5 2.5L6 3.5L7 2.5C8 1.5 9.5 1.5 10.5 2.5C11.5 3.5 11.5 5 10.5 6L6 10.5Z" fill="none" stroke="#999" stroke-width="1"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
 
-            if (index > -1) {
-                favourites.splice(index, 1);
-            } else {
-                favourites.push({ id, name, period, notes: '' });
-            }
+function observeSections() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.period-section').forEach(s => obs.observe(s));
+}
 
-            localStorage.setItem('favourites', JSON.stringify(favourites));
-            renderTimeline();
-            renderBoard();
-            updateCompareSelects();
-        }
+// ---- FAVOURITES ----
+function toggleFav(id) {
+  if (favourites.includes(id)) {
+    favourites = favourites.filter(f => f !== id);
+  } else {
+    favourites.push(id);
+  }
+  save();
+  const btn = document.getElementById(`favbtn-${id}`);
+  if (btn) {
+    btn.classList.toggle('active', favourites.includes(id));
+    const path = btn.querySelector('path');
+    if (path) {
+      if (favourites.includes(id)) {
+        path.setAttribute('fill','var(--white)');
+        path.setAttribute('stroke','none');
+      } else {
+        path.setAttribute('fill','none');
+        path.setAttribute('stroke','#999');
+      }
+    }
+  }
+  if (currentView === 'board') renderBoard();
+}
 
-        // Check if Favourited
-        function isFavourited(id) {
-            const favourites = JSON.parse(localStorage.getItem('favourites')) || [];
-            return favourites.some(f => f.id === id);
-        }
+// ---- COMPARE ----
+function toggleCompare(id) {
+  if (compareList.includes(id)) {
+    compareList = compareList.filter(c => c !== id);
+  } else {
+    if (compareList.length >= 2) {
+      compareList.shift();
+    }
+    compareList.push(id);
+  }
+  save();
+  document.querySelectorAll('[id^="cmpbtn-"]').forEach(btn => {
+    const bid = btn.id.replace('cmpbtn-','');
+    btn.className = `btn-compare ${compareList.includes(bid)?'in-compare':''}`;
+    btn.textContent = compareList.includes(bid) ? 'Selected' : '+ Compare';
+  });
+  updateCompareBadge();
+  if (currentView === 'compare') renderCompare();
+}
 
-        // Render Board
-        function renderBoard() {
-            const favourites = JSON.parse(localStorage.getItem('favourites')) || [];
-            const container = document.getElementById('boardContainer');
+function updateCompareBadge() {
+  const badge = document.getElementById('compare-badge');
+  const count = document.getElementById('compare-count');
+  count.textContent = compareList.length;
+  badge.classList.toggle('show', compareList.length > 0);
+}
 
-            if (favourites.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>💭 No favourites yet</p><p style="font-size: 0.9rem; color: #505050;">Click the heart icon on any building to add it to your board.</p></div>';
-                return;
-            }
+function clearCompare() {
+  compareList = [];
+  save();
+  document.querySelectorAll('[id^="cmpbtn-"]').forEach(btn => {
+    btn.className = 'btn-compare';
+    btn.textContent = '+ Compare';
+  });
+  updateCompareBadge();
+  renderCompare();
+}
 
-            container.innerHTML = favourites.map(fav => {
-                const building = findBuilding(fav.id);
-                return `
-                    <div class="board-card">
-                        <div class="board-header">
-                            <div class="board-title">${fav.name}</div>
-                            <button class="remove-btn" onclick="removeFavourite('${fav.id}')">−</button>
-                        </div>
-                        <div class="board-period">${fav.period}</div>
-                        <div style="font-size: 0.85rem; color: #a0a0a0; margin-bottom: 0.8rem;">${building.year} • ${building.location}</div>
-                        <div style="margin-bottom: 1rem;">
-                            <button class="btn-secondary" onclick="showDetail('${fav.id}')" style="width: 100%;">View Details</button>
-                        </div>
-                        <div style="color: #d4af37; font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem;">My Notes</div>
-                        <textarea class="notes-input" placeholder="Add personal observations..." onchange="updateFavouriteNotes('${fav.id}', this.value)">${fav.notes || ''}</textarea>
-                    </div>
-                `;
-            }).join('');
-        }
+function renderCompare() {
+  const slotA = document.getElementById('slot-a');
+  const slotB = document.getElementById('slot-b');
+  const wrap = document.getElementById('compare-table-wrap');
+  const bA = compareList[0] ? getBuildingById(compareList[0]) : null;
+  const bB = compareList[1] ? getBuildingById(compareList[1]) : null;
 
-        // Remove Favourite
-        function removeFavourite(id) {
-            let favourites = JSON.parse(localStorage.getItem('favourites')) || [];
-            favourites = favourites.filter(f => f.id !== id);
-            localStorage.setItem('favourites', JSON.stringify(favourites));
-            renderBoard();
-            renderTimeline();
-            updateCompareSelects();
-        }
+  slotA.innerHTML = `<div class="compare-slot-label">Building A</div>
+    ${bA ? `<div class="compare-slot-name">${bA.building.name}</div><div class="compare-slot-meta">${bA.building.year} &bull; ${bA.building.location}</div>` : '<div class="compare-slot-empty">None selected</div>'}`;
+  slotB.innerHTML = `<div class="compare-slot-label">Building B</div>
+    ${bB ? `<div class="compare-slot-name">${bB.building.name}</div><div class="compare-slot-meta">${bB.building.year} &bull; ${bB.building.location}</div>` : '<div class="compare-slot-empty">None selected</div>'}`;
 
-        // Update Favourite Notes
-        function updateFavouriteNotes(id, notes) {
-            let favourites = JSON.parse(localStorage.getItem('favourites')) || [];
-            const fav = favourites.find(f => f.id === id);
-            if (fav) {
-                fav.notes = notes;
-                localStorage.setItem('favourites', JSON.stringify(favourites));
-            }
-        }
+  if (bA && bB) {
+    const rows = [
+      ['Style', bA.building.style, bB.building.style],
+      ['Year', bA.building.year, bB.building.year],
+      ['Location', bA.building.location, bB.building.location],
+      ['Architect', bA.building.architect, bB.building.architect],
+      ['Material', bA.building.material, bB.building.material],
+      ['Height', bA.building.height, bB.building.height],
+      ['Period', bA.period.name, bB.period.name],
+    ];
+    wrap.innerHTML = `
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>${bA.building.name}</th>
+            <th>${bB.building.name}</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r => `<tr>
+            <td>${r[0]}</td>
+            <td class="${r[1]!==r[2]?'highlight':''}">${r[1]||'N/A'}</td>
+            <td class="${r[1]!==r[2]?'highlight':''}">${r[2]||'N/A'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    `;
+  } else {
+    wrap.innerHTML = '';
+  }
 
-        // Populate Compare Selects
-        function populateCompareSelects() {
-            const select1 = document.getElementById('building1Select');
-            const select2 = document.getElementById('building2Select');
+  const notesEl = document.getElementById('compare-notes');
+  if (notesEl) {
+    notesEl.value = compareNotesSaved;
+    notesEl.oninput = () => {
+      compareNotesSaved = notesEl.value;
+      localStorage.setItem('arch_compare_notes', compareNotesSaved);
+    };
+  }
+}
 
-            let optionsHtml = '<option value="">Select a building...</option>';
-            architectureData.forEach(era => {
-                era.buildings.forEach(building => {
-                    optionsHtml += `<option value="${building.id}">${building.name} (${era.period})</option>`;
-                });
-            });
+// ---- BOARD ----
+function renderBoard() {
+  const grid = document.getElementById('board-grid');
+  const count = document.getElementById('board-count');
+  count.textContent = `${favourites.length} saved`;
+  if (favourites.length === 0) {
+    grid.innerHTML = '<div class="board-empty">No buildings saved yet &mdash; heart a building to add it here</div>';
+    return;
+  }
+  grid.innerHTML = favourites.map(id => {
+    const found = getBuildingById(id);
+    if (!found) return '';
+    const { building: b, period: p } = found;
+    const note = boardNotes[id] || '';
+    return `
+      <div class="board-card">
+        <div class="board-card-name">${b.name}</div>
+        <div class="board-card-meta">${p.name} &bull; ${b.year} &bull; ${b.location}</div>
+        <textarea class="board-note" placeholder="Add notes..." onchange="saveNote('${id}', this.value)">${note}</textarea>
+        <div class="board-card-actions">
+          <span class="card-style-tag">${b.style}</span>
+          <button class="btn-remove-board" onclick="toggleFav('${id}')">Remove</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
 
-            select1.innerHTML = optionsHtml;
-            select2.innerHTML = optionsHtml;
-        }
+function saveNote(id, val) {
+  boardNotes[id] = val;
+  save();
+}
 
-        // Update Compare Display
-        function updateCompareDisplay() {
-            const id1 = document.getElementById('building1Select').value;
-            const id2 = document.getElementById('building2Select').value;
+// ---- DETAIL PANEL ----
+function openDetail(id) {
+  selectedBuilding = id;
+  const found = getBuildingById(id);
+  if (!found) return;
+  const { building: b, period: p } = found;
+  const panel = document.getElementById('side-panel');
+  const body = document.getElementById('panel-body');
+  document.getElementById('panel-label').textContent = 'Building Detail';
+  body.innerHTML = `
+    <div class="detail-name">${b.name}</div>
+    <div class="detail-period-label">${p.name} Period</div>
+    <div class="detail-visual">${getSVG(b.style)}</div>
+    <div class="detail-grid">
+      <div class="detail-cell"><div class="detail-cell-label">Year</div><div class="detail-cell-value">${b.year}</div></div>
+      <div class="detail-cell"><div class="detail-cell-label">Location</div><div class="detail-cell-value">${b.location}</div></div>
+      <div class="detail-cell"><div class="detail-cell-label">Architect</div><div class="detail-cell-value">${b.architect}</div></div>
+      <div class="detail-cell"><div class="detail-cell-label">Style</div><div class="detail-cell-value">${b.style}</div></div>
+      <div class="detail-cell"><div class="detail-cell-label">Material</div><div class="detail-cell-value">${b.material}</div></div>
+      <div class="detail-cell"><div class="detail-cell-label">Height</div><div class="detail-cell-value">${b.height||'N/A'}</div></div>
+    </div>
+    <div class="detail-section-title">Overview</div>
+    <div class="detail-text">${b.desc}</div>
+    <div class="detail-section-title">Key Features</div>
+    <div class="detail-features">${b.features.map(f=>`<span class="feature-tag">${f}</span>`).join('')}</div>
+  `;
+  panel.classList.add('open');
+}
 
-            const building1 = id1 ? findBuilding(id1) : null;
-            const building2 = id2 ? findBuilding(id2) : null;
+function closePanel() {
+  document.getElementById('side-panel').classList.remove('open');
+  selectedBuilding = null;
+}
 
-            const detailsContainer1 = document.getElementById('building1Details');
-            const detailsContainer2 = document.getElementById('building2Details');
+// ---- VIEWS ----
+function switchView(view) {
+  currentView = view;
+  ['timeline','board','compare'].forEach(v => {
+    document.getElementById(`${v}-view`)?.classList.remove('active');
+    document.getElementById(`btn-${v}-view`)?.classList.remove('active');
+    document.getElementById(`btn-${v}`)?.classList.remove('active');
+  });
+  document.getElementById(`${view}-view`)?.classList.add('active');
+  document.getElementById(`btn-${view}`)?.classList.add('active');
+  document.getElementById(`btn-${view}-view`)?.classList.add('active');
 
-            if (building1) {
-                detailsContainer1.innerHTML = `
-                    <div class="compare-detail-row">
-                        <span class="compare-detail-label">Year:</span>
-                        <span>${building1.year}</span>
-                    </div>
-                    <div class="compare-detail-row">
-                        <span class="compare-detail-label">Location:</span>
-                        <span>${building1.location}</span>
-                    </div>
-                    <div class="compare-detail-row">
-                        <span class="compare-detail-label">Architect:</span>
-                        <span>${building1.architect}</span>
-                    </div>
-                    <div class="compare-detail-row">
-                        <span class="compare-detail-label">Period:</span>
-                        <span>${building1.period}</span>
-                    </div>
-                    <div class="compare-detail-row">
-                        <span class="compare-detail-label">Structure:</span>
-                        <span>${building1.structure}</span>
-                    </div>
-                `;
-            } else {
-                detailsContainer1.innerHTML = '<div style="color: #707070;">Select a building...</div>';
-            }
+  // Show/hide timeline
+  const tl = document.getElementById('timeline-view');
+  if (view === 'timeline') { tl.style.display = 'block'; }
+  else { tl.style.display = 'none'; }
 
-            if (building2) {
-                detailsContainer2.innerHTML = `
-                    <div class="compare-detail-row">
-                        <span class="compare-detail-label">Year:</span>
-                        <span>${building2.year}</span>
-                    </div>
-                    <div class="compare-detail-row">
-                        <span class="compare-detail-label">Location:</span>
-                        <span>${building2.location}</span>
-                    </div>
-                    <div class="compare-detail-row">
-                        <span class="compare-detail-label">Architect:</span>
-                        <span>${building2.architect}</span>
-                    </div>
-                    <div class="compare-detail-row">
-                        <span class="compare-detail-label">Period:</span>
-                        <span>${building2.period}</span>
-                    </div>
-                    <div class="compare-detail-row">
-                        <span class="compare-detail-label">Structure:</span>
-                        <span>${building2.structure}</span>
-                    </div>
-                `;
-            } else {
-                detailsContainer2.innerHTML = '<div style="color: #707070;">Select a building...</div>';
-            }
-        }
+  if (view === 'board') renderBoard();
+  if (view === 'compare') renderCompare();
+  closePanel();
+}
 
-        // Save Comparison
-        function saveComparison() {
-            const id1 = document.getElementById('building1Select').value;
-            const id2 = document.getElementById('building2Select').value;
-            const notes = document.getElementById('compareNotes').value;
+// ---- FILTER ----
+function filterPeriod(id, el) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderTimeline(id);
+  switchView('timeline');
+}
 
-            if (!id1 || !id2) {
-                alert('Please select both buildings');
-                return;
-            }
+// ---- CLOCK ----
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toUTCString().split(' ').slice(4,5)[0] + ' UTC';
+}
+setInterval(updateClock, 1000);
+updateClock();
 
-            const building1 = findBuilding(id1);
-            const building2 = findBuilding(id2);
+// ---- INIT ----
+window.addEventListener('DOMContentLoaded', () => {
+  renderTimeline();
+  updateCompareBadge();
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hide');
+  }, 1500);
+});
 
-            let comparisons = JSON.parse(localStorage.getItem('comparisons')) || [];
-            comparisons.push({
-                id: Date.now(),
-                building1: { id: id1, name: building1.name, period: building1.period },
-                building2: { id: id2, name: building2.name, period: building2.period },
-                notes: notes
-            });
-
-            localStorage.setItem('comparisons', JSON.stringify(comparisons));
-            document.getElementById('compareNotes').value = '';
-            renderComparisons();
-        }
-
-        // Render Comparisons
-        function renderComparisons() {
-            const comparisons = JSON.parse(localStorage.getItem('comparisons')) || [];
-            const container = document.getElementById('comparisonListContainer');
-
-            if (comparisons.length === 0) {
-                container.innerHTML = '<div class="empty-state"><p>🔍 No comparisons yet</p><p style="font-size: 0.9rem; color: #505050;">Create a comparison above to save your analysis.</p></div>';
-                return;
-            }
-
-            container.innerHTML = comparisons.map(comp => `
-                <div class="comparison-item">
-                    <div class="comparison-buildings">
-                        <div class="comparison-building">
-                            <div class="comparison-building-name">${comp.building1.name}</div>
-                            <div class="comparison-building-period">${comp.building1.period}</div>
-                        </div>
-                        <div class="comparison-divider">↔</div>
-                        <div class="comparison-building">
-                            <div class="comparison-building-name">${comp.building2.name}</div>
-                            <div class="comparison-building-period">${comp.building2.period}</div>
-                        </div>
-                    </div>
-                    <div class="comparison-notes-display">${comp.notes}</div>
-                    <button class="delete-comparison-btn" onclick="deleteComparison(${comp.id})">Delete</button>
-                </div>
-            `).join('');
-        }
-
-        // Delete Comparison
-        function deleteComparison(id) {
-            let comparisons = JSON.parse(localStorage.getItem('comparisons')) || [];
-            comparisons = comparisons.filter(c => c.id !== id);
-            localStorage.setItem('comparisons', JSON.stringify(comparisons));
-            renderComparisons();
-        }
-
-        // Mode Switching
-        function switchMode(mode) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(mode).classList.add('active');
-            event.target.classList.add('active');
-            closeDetailPanel();
-        }
-
-        // Local Storage Management
-        function loadLocalStorage() {
-            renderBoard();
-            renderComparisons();
-        }
-
-        // Helper Functions
-        function updateCompareSelects() {
-            populateCompareSelects();
-        }
-
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Start App
-        window.addEventListener('DOMContentLoaded', init);
-    </script>
+// Override board/compare view CSS display logic
+document.getElementById('board-view').style.display = 'none';
+document.getElementById('compare-view').style.display = 'none';
+document.getElementById('board-view').classList.remove('active');
+document.getElementById('compare-view').classList.remove('active');
+</script>
 </body>
 </html>
